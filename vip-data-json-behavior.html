@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2016 The Ayla Project Authors. All rights reserved.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+    Ayla = window.Ayla || {};
+    Ayla.VipDataJsonBehavior = {
+        properties: {
+            dataSourceJson: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                observer: '_dataSourceJsonInitChanged'
+            }
+        },
+        observers: ['_dataSourceJsonChanged(dataSourceJson.splices)'],
+        created: function () {
+            console.log(this.id + " -> " + this.localName + " -> vip-data-json -> Event created");
+        },
+        getDataJson: function (dataSource) {
+            /*   if (!Ayla[dataSource.collection]){            
+             Ayla[dataSource.collection] = new Mongo.Collection(null);
+             }  */
+            dataSource.docs.forEach(function (doc) {
+                for (var prop in this.data) {
+                    doc[prop] = this.data[prop];
+                }
+                Ayla[this.collection].insert(doc);
+            }, dataSource);
+        },
+        _dataSourceJsonInitChanged: function (val, old) {
+            if (val) {
+                if (typeof val === "string")
+                {
+                    this.dataSourceJson = JSON.parse(val);
+                }
+                else {
+                    val.forEach(this.getDataJson, this);
+                }
+            }
+        },
+        _dataSourceJsonChanged: function (changeRecord) {
+            if (changeRecord) {
+                changeRecord.indexSplices.forEach(function (s) {
+                    var newDataSources = s.object.slice(s.index, s.index + s.addedCount);
+                    newDataSources.forEach(this.getDataJson, this);
+                }, this);
+            }
+        },
+        ready: function () {
+            console.log(this.id + " -> " + this.localName + " -> vip-data-json -> Event ready");
+        },
+        attached: function () {
+            console.log(this.id + " -> " + this.localName + " -> vip-data-json -> Event attached");
+        },
+        detached: function () {
+            console.log(this.id + " -> " + this.localName + " -> vip-data-json -> Event detached");
+        }
+    };
+</script>
