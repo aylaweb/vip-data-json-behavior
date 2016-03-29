@@ -1,4 +1,4 @@
-vip-data-ajax-behavior
+vip-data-json-behavior
 ==============
 
-Documentation for vip-data-ajax-behavior
+Documentation for vip-data-json-behavior
